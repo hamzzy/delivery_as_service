@@ -1,6 +1,6 @@
-import { Column, CreateDateColumn, UpdateDateColumn } from 'typeorm';
+import { BaseEntity, Column, CreateDateColumn, UpdateDateColumn } from 'typeorm';
 
-export abstract class DateTime {
+export class DateAudit {
   @Column()
   @CreateDateColumn()
   createdAt: Date;
@@ -8,4 +8,5 @@ export abstract class DateTime {
   @Column()
   @UpdateDateColumn()
   updatedAt: Date;
+  
 }

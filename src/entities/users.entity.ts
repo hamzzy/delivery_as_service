@@ -1,12 +1,12 @@
 import { IsNotEmpty } from 'class-validator';
-import { BaseEntity, Entity, PrimaryGeneratedColumn, Column, Unique} from 'typeorm';
+import { BaseEntity, Entity, PrimaryGeneratedColumn, Column, Unique } from 'typeorm';
 import { User } from '@interfaces/users.interface';
-import { DateTime } from './DateTime.entity';
+import { DateAudit } from './DateTime.entity';
 
 @Entity()
-export class Customer extends DateTime implements User {
-  @PrimaryGeneratedColumn()
-  id: number;
+export class Customer extends BaseEntity implements User {
+  @PrimaryGeneratedColumn('uuid')
+  public id: string;
 
   @Column()
   @IsNotEmpty()
@@ -16,4 +16,7 @@ export class Customer extends DateTime implements User {
   @Column()
   @IsNotEmpty()
   password: string;
+
+  @Column(() => DateAudit)
+  audit: DateAudit;
 }

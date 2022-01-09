@@ -1,12 +1,12 @@
 import { IsNotEmpty } from 'class-validator';
 import { BaseEntity, Entity, PrimaryGeneratedColumn, Column, OneToOne, JoinColumn } from 'typeorm';
-import { DateTime } from './DateTime.entity';
+import { DateAudit } from './DateTime.entity';
 import { Customer } from './users.entity';
 
 @Entity()
-export class CustomerApiKey extends DateTime {
-  @PrimaryGeneratedColumn()
-  id: number;
+export class CustomerApiKey extends BaseEntity {
+  @PrimaryGeneratedColumn('uuid')
+  public id: string;
 
   @Column()
   @IsNotEmpty()
@@ -19,4 +19,7 @@ export class CustomerApiKey extends DateTime {
   })
   @JoinColumn()
   customer: Customer;
+
+  @Column(() => DateAudit)
+  audit: DateAudit;
 }
