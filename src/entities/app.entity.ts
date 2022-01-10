@@ -1,10 +1,11 @@
+import { CustomerApi } from '@/interfaces/users.interface';
 import { IsNotEmpty } from 'class-validator';
 import { BaseEntity, Entity, PrimaryGeneratedColumn, Column, OneToOne, JoinColumn } from 'typeorm';
 import { DateAudit } from './DateTime.entity';
 import { Customer } from './users.entity';
 
 @Entity()
-export class CustomerApiKey extends BaseEntity {
+export class CustomerApiKey extends BaseEntity implements CustomerApi {
   @PrimaryGeneratedColumn('uuid')
   public id: string;
 

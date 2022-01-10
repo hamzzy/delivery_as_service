@@ -3,3 +3,9 @@ export interface User {
   email: string;
   password: string;
 }
+
+export interface CustomerApi {
+  id: string;
+  apiKey: string;
+  customer: any;
+}

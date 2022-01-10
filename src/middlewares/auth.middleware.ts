@@ -1,7 +1,7 @@
 import config from 'config';
 import { NextFunction, Response } from 'express';
 import { verify } from 'jsonwebtoken';
-import { UserEntity } from '@entities/users.entity';
+import { Customer} from '@entities/users.entity';
 import { HttpException } from '@exceptions/HttpException';
 import { DataStoredInToken, RequestWithUser } from '@interfaces/auth.interface';
 
@@ -12,7 +12,7 @@ const authMiddleware = async (req: RequestWithUser, res: Response, next: NextFun
     if (Authorization) {
       const secretKey: string = config.get('secretKey');
       const { id } = (await verify(Authorization, secretKey)) as DataStoredInToken;
-      const findUser = await UserEntity.findOne(id, { select: ['id', 'email', 'password'] });
+      const findUser = await Customer.findOne(id, { select: ['id', 'email', 'password'] });
 
       if (findUser) {
         req.user = findUser;
