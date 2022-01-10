@@ -1,12 +1,14 @@
 import { compare, hash } from 'bcryptjs';
 import request from 'supertest';
-import { createConnection, getRepository } from 'typeorm';
+import { createConnection, getConnection, getRepository } from 'typeorm';
 import App from '@/app';
 import dbConnection from '@databases';
 import { CreateUserDto } from '@dtos/users.dto';
 import AuthRoute from '@routes/auth.route';
 import { Customer } from '@entities/users.entity';
-// import faker from 'faker';
+import minifaker from 'minifaker';
+import 'minifaker/dist/locales/en';
+
 beforeAll(async () => {
   await createConnection(dbConnection);
 });
@@ -16,9 +18,9 @@ afterAll(async () => {
 });
 
 describe('Testing  User Database', () => {
-  it('should create user', async () => {
-    const email = 'adn@mail.com';
-    const password = await hash('helloword', 10);
+  test('should create user', async () => {
+    const email = minifaker.email();
+    const password = minifaker.password.generate();
 
     const user = new Customer();
     user.email = email;
@@ -38,8 +40,8 @@ describe('Testing Auth', () => {
   describe('[POST] /signup', () => {
     it('response should have the Create userData', async () => {
       const userData: CreateUserDto = {
-        email: 'tes@email.com',
-        password: 'q1w2e3r4!',
+        email: minifaker.email(),
+        password: minifaker.password.generate(),
       };
 
       const authRoute = new AuthRoute();
@@ -53,33 +55,61 @@ describe('Testing Auth', () => {
       });
 
       const app = new App([authRoute]);
-      return request(app.getServer()).post(`${authRoute.path}signup`).send(userData).expect(201);
+      const res = await request(app.getServer()).post(`${authRoute.path}signup`).send(userData);
+      expect(res.statusCode).toEqual(201);
+      expect(res.body).toMatchObject({
+        message: 'signup',
+      });
     });
+
+    // it('should return 409 & valid response for duplicated user', async () => {
+    //   const userData: CreateUserDto = {
+    //     email: minifaker.email(),
+    //     password: minifaker.password.generate(),
+    //   };
+
+    //   const authRoute = new AuthRoute();
+    //   const users = Customer;
+    //   const userRepository = getRepository(users);
+
+    //   userRepository.findOne = jest.fn().mockReturnValue(null);
+    //   userRepository.save = jest.fn().mockReturnValue({
+    //     email: userData.email,
+    //     password: await hash(userData.password, 10),
+    //   });
+
+    //   const app = new App([authRoute]);
+    //   await request(app.getServer()).post(`${authRoute.path}signup`).send(userData);
+
+    //   const res = await request(app.getServer()).post(`${authRoute.path}signup`).send(userData);
+    //   expect(res.body).toMatchObject({
+    //     message: `You're email ${userData.email} already exists`,
+    //   });
+    // });
   });
 
-  //   describe('[POST] /login', () => {
-  //     it('response should have the Set-Cookie header with the Authorization token', async () => {
-  //       const userData: CreateUserDto = {
-  //         email: 'test@email.com',
-  //         password: 'q1w2e3r4!',
-  //       };
+  describe('[POST] /login', () => {
+    it('response should have Authorization token', async () => {
+      const userData: CreateUserDto = {
+        email: minifaker.email(),
+        password: minifaker.password.generate(),
+      };
 
-  //       const authRoute = new AuthRoute();
-  //       const users = authRoute.authController.authService.users;
-  //       const userRepository = getRepository(users);
+      const authRoute = new AuthRoute();
+      const users = Customer;
+      const userRepository = getRepository(users);
 
-  //       userRepository.findOne = jest.fn().mockReturnValue({
-  //         id: 1,
-  //         email: userData.email,
-  //         password: await bcrypt.hash(userData.password, 10),
-  //       });
+      userRepository.findOne = jest.fn().mockReturnValue({
+        email: userData.email,
+        password: await hash(userData.password, 10),
+      });
 
-  //       const app = new App([authRoute]);
-  //       return request(app.getServer())
-  //         .post(`${authRoute.path}login`)
-  //         .send(userData)
-  //         .expect('Set-Cookie', /^Authorization=.+/);
-  //     });
-  //   });
-
+      const app = new App([authRoute]);
+      const res = await request(app.getServer()).post(`${authRoute.path}login`).send(userData);
+      expect(res.statusCode).toBe(200);
+      expect(res.body).toEqual({
+        token: expect.stringMatching(/^[A-Za-z0-9-_=]+\.[A-Za-z0-9-_=]+\.?[A-Za-z0-9-_.+/=]*$/),
+      });
+    });
+  });
 });
