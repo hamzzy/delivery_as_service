@@ -6,6 +6,7 @@ import { Customer } from './users.entity';
 
 @Entity()
 export class CustomerApiKey extends BaseEntity implements CustomerApi {
+  customeId: any;
   @PrimaryGeneratedColumn('uuid')
   public id: string;
 

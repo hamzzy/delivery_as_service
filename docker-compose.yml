@@ -1,50 +1,19 @@
-version: '3.7'
-
+version: '2'
 services:
-  proxy:
-    image: nginx:alpine
-    container_name: proxy
-    ports:
-      - '80:80'
+  web:
+    build: .
+    command: npm run dev
     volumes:
-      - ./nginx.conf:/etc/nginx/nginx.conf
-    restart: 'unless-stopped'
-    networks:
-      - backend
-  server:
-    build:
-      context: ./
-      target: development-build-stage
-      dockerfile: Dockerfile
-    container_name: server
+      - .:/usr/app/
+      - /usr/app/node_modules
     ports:
-      - '3000:3000'
-    volumes:
-      - ./:/app
-      - /app/node_modules
-    restart: 'unless-stopped'
-    networks:
-      - backend
-    links:
-      - pg
+      - "3000:3000"
     depends_on:
-      - pg
-  pg:
-    image: bitnami/postgresql:11-debian-9
-    container_name: pg
+      - postgres
     environment:
-      POSTGRESQL_USERNAME: root
-      POSTGRESQL_PASSWORD: password
-      POSTGRESQL_DATABASE: test
-    ports:
-      - '5432:5432'
-    networks:
-      - backend
-
-networks:
-  backend:
-    driver: bridge
-
-volumes:
-  data:
-    driver: local
+      DATABASE_URL: postgres://todoapp@postgres/todos
+  postgres:
+    image: postgres:9.6.2-alpine
+    environment:
+      POSTGRES_USER: todoapp
+      POSTGRES_DB: todos

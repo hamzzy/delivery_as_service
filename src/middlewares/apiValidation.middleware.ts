@@ -18,7 +18,7 @@ const ApiKeyMiddleware = async (req: RequestApiKey, res: Response, next: NextFun
         next(new HttpException(401, 'wrong x-api-key'));
       }
     } else {
-      next(new HttpException(404, 'api-key expired'));
+      next(new HttpException(404, 'api-key not found'));
     }
   } catch (error) {
     next(new HttpException(401, 'Wrong key'));

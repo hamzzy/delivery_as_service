@@ -2,7 +2,7 @@ import { compare, hash } from 'bcryptjs';
 import request from 'supertest';
 import { createConnection, getConnection, getRepository } from 'typeorm';
 import App from '@/app';
-import dbConnection from '@databases';
+import dbConnection from '../ormconfig';
 import { CreateUserDto } from '@dtos/users.dto';
 import AuthRoute from '@routes/auth.route';
 import { Customer } from '@entities/users.entity';
