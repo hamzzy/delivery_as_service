@@ -22,11 +22,6 @@ class CustomerRoute implements Routes {
     this.router.get(`${this.path}getApikey`, authMiddleware, this.customerController.getCustomerKey);
     this.router.post(`${this.path}quote`, [ApiKeyMiddleware, validationMiddleware(QouteDto, 'body')], this.customerController.getCustomerQuote);
     this.router.post(`${this.path}order`, [ApiKeyMiddleware, validationMiddleware(OrderDto, 'body')], this.customerController.CustomerOrder);
-    this.router.delete(
-      `${this.path}cancel_order`,
-      [ApiKeyMiddleware, validationMiddleware(CancelOrderDto, 'body')],
-      this.customerController.CustomerOrderCancel,
-    );
   }
 }
 

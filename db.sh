@@ -1,5 +1,5 @@
 
-npx schema:sync
+yarn schema:sync
 
 
-npx seed:run
+yarn seed:run

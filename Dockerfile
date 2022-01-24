@@ -1,5 +1,18 @@
-FROM node:7.7.2-alpine
-WORKDIR /usr/app
-COPY package.json .
-RUN npm install --quiet
-COPY . .
+# Common build stage
+FROM node:lts-alpine as common-build-stage
+
+COPY . ./app
+
+WORKDIR /app
+
+RUN npm install
+
+EXPOSE 3000
+
+# Development build stage
+FROM common-build-stage as development-build-stage
+
+ENV NODE_ENV development
+
+CMD ["npm", "run", "dev"]
+

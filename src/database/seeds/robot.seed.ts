@@ -6,9 +6,7 @@ import { RobotLocationHistory } from '../../entities/robotMovement.entity';
 export default class CreateRobot implements Seeder {
   public async run(factory: Factory, connection: Connection): Promise<any> {
     await factory(Robot)().createMany(6);
-    await factory(Robot)().createMany(6);
-
-    await factory(RobotLocationHistory)().createMany(20);
+    await factory(RobotLocationHistory)().createMany(30);
 
 
   }

@@ -8,6 +8,7 @@ import { QouteRequest, QouteResponse } from '@/interfaces/quote.interface';
 import { Robot } from '@/entities/robot.entity';
 import { DeliveryQuote } from '@/entities/quote.entity';
 import { Point } from 'geojson';
+import { min } from 'class-validator';
 import { customerOrder } from '@/entities/order.entity';
 import { OrderDto } from '@/dtos/order.dts';
 import { CancelOrderDto } from '@/dtos/cancelOrder.dto';
@@ -17,7 +18,7 @@ class CustomerService {
   public async CustomerKey(customer_id: any): Promise<any> {
     const ApiKey = await generatedApiKey();
     const cus = await CustomerApiKey.create({ apiKey: ApiKey, customer: customer_id }).save();
-    return cus;
+    return cus
   }
 
   public async getCustomerKey(customer_id: any): Promise<any> {
@@ -59,6 +60,7 @@ class CustomerService {
     const quote = await DeliveryQuote.findOne({ where: { id: api_data.qoute } });
 
     //  calculate the eculedian distance between customer and robot co ordinate
+
     robot.map(data => {
       dat.push({
         robot_id: data.id,
@@ -80,7 +82,7 @@ class CustomerService {
 
     const update_robot = await Robot.findOne({ where: { id: assigned_robot.robot_id } });
 
-    const order = await customerOrder.create({
+    const order = customerOrder.create({
       name: api_data.name,
       description: api_data.description,
       reciever_name: api_data.reciever_name,
@@ -97,21 +99,6 @@ class CustomerService {
       update_robot.availability = false;
       update_robot.save();
       return order;
-    }
-  }
-
-  public async CustomerCancelOrder(customer_id: any, order_id: CancelOrderDto): Promise<any> {
-    const cancelOrder = await customerOrder.findOne({ where: { id: order_id.order_id, customers: customer_id } });
-    cancelOrder.remove();
-    if (cancelOrder) {
-      const quo = await DeliveryQuote.createQueryBuilder()
-        .innerJoin('DeliveryQuote.order', 'order')
-        .where('order.id = :id', { id: cancelOrder.id })
-        .getOne();
-      DeliveryQuote.remove(quo);
-      return true;
-    } else {
-      return new HttpException(400, ' order not found');
     }
   }
 }

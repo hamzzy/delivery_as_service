@@ -18,7 +18,12 @@ src/
         ... this folder contains validation logic,type strict logic.
 
     entities/.. this folder contains the model logic where db design is been implemented.
-    exceptions
+
+    exceptions /.. this folder contains exceptions need to throw http error.
+
+    interfaces/ .. this folder contains the typescript type of some request and response.
+
+    logs/.. the error and debug log folder
 
 ```
 
@@ -43,7 +48,6 @@ This application consist of two part using an mvc Architecture approach
  - api/customer/getApikey
  - api/customer/quote
  - api/customer/order
- - api/customer/cancel_order
  
 
 > To run this application check
@@ -83,21 +87,21 @@ createdb new
 
 ### To start  the application
 ```bash
-yarn  dev | npm dev
+yarn dev | npm dev
 ```
 
 make sure it is  running on port 5000 and db is connected also. Sync the app model with 
 ```
-yarn schema:sync | npx schema:sync
+yarn schema:sync
 ```
 This seed is needed to populate robots and robotmovement history model
 ```
-yarn seed:run | npx seed:run
+yarn seed:run 
 ```
 or run to execute both command
 
 ```bash
-./db.sh 
+bash db.sh 
 ```
 
 To check the application unit test, check the test folder.

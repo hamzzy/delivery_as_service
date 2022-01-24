@@ -1,8 +1,9 @@
-import { Customer } from '@/entities/users.entity';
-import AuthService from '@/services/auth.service';
+import { Customer } from '../entities/users.entity';
+import AuthService from '../services/auth.service';
 import { hash } from 'bcryptjs';
-import minifaker from 'minifaker';
+import minifaker, { setDefaultLocale } from 'minifaker';
 import 'minifaker/dist/locales/en';
+
 import { ValidationOptions, registerDecorator, ValidationArguments, validateSync } from 'class-validator';
 import { plainToClass } from 'class-transformer';
 import { v4 as uuidv4 } from 'uuid';
@@ -61,13 +62,7 @@ export async function createDummyAndAuthorize(): Promise<AuthorizedDummyUser> {
   return { ...user, token: authToken.token };
 }
 
-export async function createDummyRobot() {
-  
-}
-// export async function deleteUser(userId: string): Promise<void> {
-//   const dbUser = await Customer.findOne({ where: { id: userId } });
-//   await dbUser.remove(dbUser)
-// }
+
 
 export async function generatedApiKey(): Promise<string> {
   const apiKey = uuidv4();

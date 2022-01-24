@@ -50,18 +50,16 @@ class CustomerController {
       const Data = req.body;
       const api_data = await this.customerService.CustomerOrder(customer, Data);
 
-      res.status(201).send(api_data);
-    } catch (error) {
-      next(error);
-    }
-  };
-
-  public CustomerOrderCancel = async (req: RequestApiKey, res: Response, next: NextFunction): Promise<void> => {
-    try {
-      const { customer } = req.customer_key;
-      const order_id: any = req.body;
-      const api_data = await this.customerService.CustomerCancelOrder(customer, order_id);
-      res.status(201).json(api_data);
+      res.status(201).json({
+        name: api_data.name,
+        description: api_data.description,
+        rec: api_data.reciever_name,
+        phone: api_data.phone,
+        country: api_data.country,
+        address: api_data.address,
+        qoute: api_data.quote,
+        robots: api_data.robots,
+      });
     } catch (error) {
       next(error);
     }

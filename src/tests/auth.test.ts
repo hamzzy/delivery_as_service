@@ -6,16 +6,21 @@ import dbConnection from '../ormconfig';
 import { CreateUserDto } from '@dtos/users.dto';
 import AuthRoute from '@routes/auth.route';
 import { Customer } from '@entities/users.entity';
-import minifaker from 'minifaker';
+import minifaker, { setDefaultLocale } from 'minifaker';
 import 'minifaker/dist/locales/en';
-
+let conn: any;
 beforeAll(async () => {
-  await createConnection(dbConnection);
+  conn = await createConnection(dbConnection);
 });
 
 afterAll(async () => {
-  await new Promise<void>(resolve => setTimeout(() => resolve(), 500));
+  await conn.synchronize(true);
+  await conn.close();
 });
+
+const authRoute = new AuthRoute();
+
+const app = new App([authRoute]);
 
 describe('Testing  User Database', () => {
   test('should create user', async () => {
@@ -43,7 +48,6 @@ describe('Testing Auth', () => {
         email: minifaker.email(),
         password: minifaker.password.generate(),
       };
-
       const authRoute = new AuthRoute();
       const users = Customer;
       const userRepository = getRepository(users);
@@ -54,47 +58,21 @@ describe('Testing Auth', () => {
         password: await hash(userData.password, 10),
       });
 
-      const app = new App([authRoute]);
-      const res = await request(app.getServer()).post(`${authRoute.path}signup`).send(userData);
+      const res = await request(app.getServer()).post(`${authRoute.path}signup`).send(userData);      
       expect(res.statusCode).toEqual(201);
       expect(res.body).toMatchObject({
         message: 'signup',
       });
     });
-
-    // it('should return 409 & valid response for duplicated user', async () => {
-    //   const userData: CreateUserDto = {
-    //     email: minifaker.email(),
-    //     password: minifaker.password.generate(),
-    //   };
-
-    //   const authRoute = new AuthRoute();
-    //   const users = Customer;
-    //   const userRepository = getRepository(users);
-
-    //   userRepository.findOne = jest.fn().mockReturnValue(null);
-    //   userRepository.save = jest.fn().mockReturnValue({
-    //     email: userData.email,
-    //     password: await hash(userData.password, 10),
-    //   });
-
-    //   const app = new App([authRoute]);
-    //   await request(app.getServer()).post(`${authRoute.path}signup`).send(userData);
-
-    //   const res = await request(app.getServer()).post(`${authRoute.path}signup`).send(userData);
-    //   expect(res.body).toMatchObject({
-    //     message: `You're email ${userData.email} already exists`,
-    //   });
-    // });
   });
 
   describe('[POST] /login', () => {
-    it('response should have Authorization token', async () => {
-      const userData: CreateUserDto = {
-        email: minifaker.email(),
-        password: minifaker.password.generate(),
-      };
+    const userData: CreateUserDto = {
+      email: minifaker.email(),
+      password: minifaker.password.generate(),
+    };
 
+    it('response should have Authorization token', async () => {
       const authRoute = new AuthRoute();
       const users = Customer;
       const userRepository = getRepository(users);
